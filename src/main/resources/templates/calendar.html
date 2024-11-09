@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Calendar and Holidays</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Assume some minimal CSS for layout -->
+</head>
+<body>
+    <h1>Calendar</h1>
+    
+    <!-- Month Navigation -->
+    <div>
+        <button onclick="navigateMonth(-1)">Previous</button>
+        <span th:text="${monthName} + ' ' + ${year}"></span>
+        <button onclick="navigateMonth(1)">Next</button>
+    </div>
+
+    <!-- Calendar Grid -->
+    <table>
+        <tr>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+        </tr>
+        <tr th:each="week : ${weeks}">
+            <td th:each="day : ${week}">
+                <span th:text="${day.date.getDayOfMonth()}"></span>
+                
+                <!-- Show holidays and events -->
+                <div th:if="${day.holidays}">
+                    <span th:each="holiday : ${day.holidays}" th:text="${holiday.name}"></span>
+                </div>
+                <div th:if="${day.events}">
+                    <span th:each="event : ${day.events}" th:text="${event.name}"></span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Forms for Adding New Holiday, Event, and Holiday Type -->
+    <h2>Add New Holiday</h2>
+    <form th:action="@{/api/holiday}" method="post">
+        <input type="text" name="name" placeholder="Holiday Name" required>
+        <textarea name="description" placeholder="Holiday Description"></textarea>
+        <input type="datetime-local" name="startDate" required>
+        <input type="datetime-local" name="endDate" required>
+        <select name="holidayType" th:each="type : ${holidayTypes}" th:value="${type.id}" th:text="${type.name}"></select>
+        <button type="submit">Add Holiday</button>
+    </form>
+
+    <h2>Add New Event</h2>
+    <form th:action="@{/api/event}" method="post">
+        <input type="text" name="name" placeholder="Event Name" required>
+        <textarea name="description" placeholder="Event Description"></textarea>
+        <input type="datetime-local" name="startDate" required>
+        <input type="datetime-local" name="endDate" required>
+        <button type="submit">Add Event</button>
+    </form>
+
+    <h2>Add New Holiday Type</h2>
+    <form th:action="@{/api/holiday-type}" method="post">
+        <input type="text" name="name" placeholder="Holiday Type Name" required>
+        <textarea name="description" placeholder="Description"></textarea>
+        <button type="submit">Add Holiday Type</button>
+    </form>
+
+    <!-- <script th:inline="javascript">
+        var calendarData = {
+            month: /[[${month}]]/,
+            year: /*[[${year}]]*/ 
+        };
+    </script> -->
+
+    <script th:inline="javascript">
+         
+    let currentMonth = /[[${month}]]/;
+    
+    let currentYear = /[[${year}]]/;
+
+    function navigateMonth(direction) {
+        const newMonth = currentMonth + direction;
+        // Handle month and year transition
+        if (newMonth < 1) {
+            currentMonth = 12;
+            currentYear -= 1;
+        } else if (newMonth > 12) {
+            currentMonth = 1;
+            currentYear += 1;
+        } else {
+            currentMonth = newMonth;
+        }
+        window.location.href = "/calendar?month=" + currentMonth + "&year=" + currentYear;
+    }
+    </script>
+</body>
+</html>
