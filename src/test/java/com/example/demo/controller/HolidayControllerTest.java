@@ -2,12 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Holiday;
 import com.example.demo.entity.HolidayType;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.service.HolidayService;
 import com.example.demo.service.HolidayTypeService;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -68,7 +68,7 @@ public class HolidayControllerTest {
                 LocalDateTime.of(2024, 1, 1, 0, 0),
                 LocalDateTime.of(2024, 1, 1, 23, 59),
                 null);
-                
+
         when(holidayService.getHolidayById(1L)).thenReturn(java.util.Optional.of(holiday));
 
         // Act & Assert
@@ -120,7 +120,8 @@ public class HolidayControllerTest {
     @Test
     public void testDeleteHoliday_invalidId() throws Exception {
         // Arrange
-        doThrow(new RuntimeException("Holiday not found with id 999")).when(holidayService).deleteHoliday(999L);
+        doThrow(new ResourceNotFoundException("Holiday not found with id 999")).when(holidayService)
+                .deleteHoliday(999L);
 
         // Act & Assert
         mockMvc.perform(delete("/holiday/999"))

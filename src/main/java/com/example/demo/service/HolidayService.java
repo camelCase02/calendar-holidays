@@ -20,6 +20,7 @@ public class HolidayService {
     }
 
     public Optional<Holiday> getHolidayById(Long id) {
+        System.out.println("id: " + id);
         if (id.intValue() > holidaysList.size()) {
             throw new ResourceNotFoundException(
                     "Holiday not found with id " + id + ". Total number of holidays is " + holidaysList.size());
@@ -30,7 +31,7 @@ public class HolidayService {
                 return Optional.of(holiday);
             }
         }
-        return Optional.empty();
+        throw new ResourceNotFoundException("Holiday not found with id " + id);
     }
 
     public Optional<Holiday> saveHoliday(Holiday holiday) {
@@ -58,7 +59,7 @@ public class HolidayService {
             }
             throw new ResourceNotFoundException("Holiday not found with id " + id);
         } catch (Exception e) {
-            throw new ResourceNotFoundException("Holiday not found with id " + id);
+            throw e;
         }
     }
 
